@@ -38,4 +38,13 @@ setting up diesel create db update as given in env
 
 diesel setup
 
-diesel migration generate create_users   ## for creating user table 
+diesel migration generate create_users   ## for creating user table up and down
+
+diesel migration run it will create a table 
+
+then run : diesel print-schema > src/schema.rs
+
+
+create the user model : src/models/user.rs
+
+load the user in : src/models/mod.rs  => pub mod user;
