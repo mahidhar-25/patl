@@ -7,6 +7,7 @@ pub struct AppConfig {
     pub database_url: String,
     pub jwt_secret: String,
     pub port: u16,
+    pub jwt_expiration: i64,
 }
 
 impl AppConfig {
@@ -21,6 +22,10 @@ impl AppConfig {
                 .unwrap_or_else(|_| "3000".to_string())
                 .parse()
                 .expect("PORT must be a number"),
+            jwt_expiration: env::var("JWT_EXPIRATION")
+                .unwrap_or_else(|_| "3600".to_string())
+                .parse()
+                .expect("JWT_EXPIRATION must be a number"),
         }
     }
 }

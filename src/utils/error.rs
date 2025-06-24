@@ -4,7 +4,6 @@ use axum::{
     response::{IntoResponse, Response},
 };
 use serde_json::json;
-use thiserror::Error;
 
 /// Application-wide error type.
 #[derive(Debug)]

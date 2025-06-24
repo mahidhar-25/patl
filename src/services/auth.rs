@@ -1,9 +1,13 @@
-use crate::config::Config as AppConfig;
+use crate::config::AppConfig;
 use crate::utils::error::AppError;
-use argon2::{self, Config};
+use argon2::{
+    Argon2,
+    password_hash::{PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
+};
 use chrono::{Duration, Utc};
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, decode, encode};
-use rand::{Rng, thread_rng};
+use rand::rngs::OsRng;
+// For secure salt generation
 use serde::{Deserialize, Serialize};
 
 /// JWT Claims structure used for encoding and decoding tokens.
@@ -20,18 +24,17 @@ pub struct Claims {
 /// # Arguments
 /// * `password` - The user's plaintext password
 ///
-/// # Returnshttps://sora.chatgpt.com/?utm_source=chatgpt
+/// # Returns
 /// * `Ok(String)` with the password hash
 /// * `Err(AppError::InternalServerError(String))` on failure
 pub fn hash_password(password: &str) -> Result<String, AppError> {
-    let salt = {
-        let mut salt = [0u8; 32];
-        thread_rng().fill(&mut salt);
-        salt
-    };
-    let config = Config::default();
-    argon2::hash_encoded(password.as_bytes(), &salt, &config)
+    let salt = SaltString::generate(&mut OsRng);
+    let argon2 = Argon2::default();
+
+    argon2
+        .hash_password(password.as_bytes(), &salt)
         .map_err(|_| AppError::InternalServerError("Failed to hash password".to_string()))
+        .map(|hash| hash.to_string())
 }
 
 /// Verify a plaintext password against a hashed password.
@@ -44,10 +47,15 @@ pub fn hash_password(password: &str) -> Result<String, AppError> {
 /// * `Ok(true)` if passwords match
 /// * `Ok(false)` if they don't
 /// * `Err(AppError::InternalServerError)` on failure
-
 pub fn verify_password(hash: &str, password: &str) -> Result<bool, AppError> {
-    argon2::verify_encoded(hash, password.as_bytes())
-        .map_err(|_| AppError::InternalServerError("Failed to verify password".to_string()))
+    let parsed_hash = PasswordHash::new(hash)
+        .map_err(|_| AppError::InternalServerError("Invalid password hash".to_string()))?;
+
+    let argon2 = Argon2::default();
+
+    Ok(argon2
+        .verify_password(password.as_bytes(), &parsed_hash)
+        .is_ok())
 }
 
 /// Create a signed JWT for a user.
@@ -88,7 +96,6 @@ pub fn create_jwt(user_id: i32, config: &AppConfig) -> Result<String, AppError> 
 /// # Returns
 /// * `Ok(Claims)` - If token is valid
 /// * `Err(AppError::Unauthorized)` - If token is invalid or expired
-///
 pub fn decode_jwt(token: &str, config: &AppConfig) -> Result<Claims, AppError> {
     decode::<Claims>(
         token,
