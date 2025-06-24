@@ -1,0 +1,21 @@
+[package]
+name = "patl"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+axum = "0.7"
+tokio = { version = "1.37", features = ["full"] }
+diesel = { version = "2.1", features = ["sqlite", "chrono"] }
+diesel_migrations = "2.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+dotenvy = "0.15"
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.7", features = ["v4", "serde"] }
+jsonwebtoken = "8.3"
+argon2 = "0.5"
+libsqlite3-sys = { version = "0.26", features = ["bundled"] }
+tower = "0.4"
+tower-http = { version = "0.5", features = ["trace", "cors"] }
+axum-extra = "0.9"

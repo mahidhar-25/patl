@@ -1,0 +1,34 @@
+// step :1 
+
+cargo new patl --bin
+cd patl
+
+mkdir src\models, src\routes, src\services, src\utils
+.env
+
+@"
+DATABASE_URL=./data/patl.db
+JWT_SECRET=my_super_secret_key
+PORT=3000
+"@ | Out-File -Encoding utf8 .env
+
+
+add dependencies
+
+create diesel.toml file point out to schema.rs
+
+install diesel cli : cargo install diesel_cli --no-default-features --features "sqlite-bundled"
+
+By now basic structure expected : 
+
+patl/
+├── src/
+│   ├── main.rs
+│   ├── config.rs
+│   ├── schema.rs
+│   ├── models/
+│   ├── routes/
+│   ├── services/
+│   ├── utils/
+├── .env
+├── diesel.toml
