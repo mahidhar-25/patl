@@ -4,7 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-axum = "0.7"
+axum = "0.7.5"
+
 tokio = { version = "1.37", features = ["full"] }
 diesel = { version = "2.1", features = ["sqlite", "chrono", "r2d2"] }
 diesel_migrations = "2.1"

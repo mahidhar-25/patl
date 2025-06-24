@@ -1,39 +1,32 @@
-//use axum::Router;
-//use hyper::Server;
 use std::net::SocketAddr;
+use tokio::net::TcpListener;
 
 mod config;
-mod models; // user model
+mod models;
+mod routes;
 mod schema;
 mod services;
 mod state;
-mod utils; // for AppError // auth services
+mod utils;
 
-//mod routes; // route handlers
-
-use config::AppConfig;
-use state::AppState;
+use crate::config::get_config;
+use crate::state::AppState;
+use routes::create_routes;
 
 #[tokio::main]
 async fn main() {
     // Load environment configuration
-    let config = AppConfig::from_env();
-
-    // Initialize application state (DB + config)
+    let config = get_config();
+    // Initialize application state
     let app_state = AppState::new(config.clone());
 
-    // Set up the app router (you'll fill this in step 8)
-    // let app = Router::new()
-    //     .merge(routes::auth::routes()) // example, coming in next step
-    //     .with_state(app_state);
+    // Create router
+    let app = create_routes(app_state);
 
-    // Define address from config port
-    let addr = SocketAddr::from(([127, 0, 0, 1], config.port));
-    println!("🚀 Server running on http://{}", addr);
+    // Define address
+    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    let listener = TcpListener::bind(addr).await.unwrap();
 
-    // Start the Axum server
-    // axum::Server::bind(&addr)
-    //     .serve(app.into_make_service())
-    //     .await
-    //     .unwrap();
+    // Serve the app
+    axum::serve(listener, app).await.unwrap();
 }
