@@ -56,3 +56,10 @@ implemented jwt token releated function like hash_password, verify_passwords, de
 implement custom errorResponse : src/utils/error.rs
 
 implement config from env : src/config.rs
+
+lot of errors changes configuration
+
+need to understand a lot here what are routes how there are going into them 
+now able to get status okay through curl
+
+after changes user able to sign in and login both through curl
