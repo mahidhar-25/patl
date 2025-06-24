@@ -48,3 +48,11 @@ then run : diesel print-schema > src/schema.rs
 create the user model : src/models/user.rs
 
 load the user in : src/models/mod.rs  => pub mod user;
+
+now create user auth service : src/services/auth.rs
+
+implemented jwt token releated function like hash_password, verify_passwords, decode , jwt_token
+
+implement custom errorResponse : src/utils/error.rs
+
+implement config from env : src/config.rs
