@@ -32,3 +32,10 @@ patl/
 │   ├── utils/
 ├── .env
 ├── diesel.toml
+
+
+setting up diesel create db update as given in env
+
+diesel setup
+
+diesel migration generate create_users   ## for creating user table 
