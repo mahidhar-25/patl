@@ -17,3 +17,10 @@ pub struct LoginUser {
 pub struct AuthResponse {
     pub token: String,
 }
+
+#[derive(Debug, Serialize)]
+pub struct UserResponse {
+    pub id: i32,
+    pub username: String,
+    pub email: String,
+}

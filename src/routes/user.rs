@@ -1,7 +1,7 @@
 use crate::{
     models::{
         user::User,
-        user_dto::{AuthResponse, LoginUser, RegisterUser},
+        user_dto::{AuthResponse, LoginUser, RegisterUser, UserResponse},
     },
     schema::users::dsl::*,
     services::auth,
@@ -27,6 +27,7 @@ pub async fn register_user(
         .db_pool
         .get()
         .map_err(|e| AppError::InternalServerError(e.to_string()))?;
+    // Insert without get_result (RETURNING not supported)
     diesel::insert_into(users)
         .values((
             username.eq(&payload.username),
@@ -36,7 +37,19 @@ pub async fn register_user(
         .execute(&mut conn)
         .map_err(|e| AppError::InternalServerError(e.to_string()))?;
 
-    Ok((StatusCode::CREATED, "User registered successfully"))
+    // Query the inserted user by email or username
+    let inserted_user = users
+        .filter(email.eq(&payload.email))
+        .first::<User>(&mut conn)
+        .map_err(|e| AppError::InternalServerError(e.to_string()))?;
+
+    let response = UserResponse {
+        id: inserted_user.id,
+        username: inserted_user.username,
+        email: inserted_user.email,
+    };
+
+    Ok((StatusCode::CREATED, Json(response)))
 }
 
 pub async fn login_user(
